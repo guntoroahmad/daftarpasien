@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const [input, setInput] = useState("");
@@ -18,20 +19,17 @@ export default function Home() {
 
     setLoading(true);
     try {
-      // Menggunakan POST dan mengirimkan query dalam body
       const response = await axios.post(
         "http://localhost:5001/api/daftar/cekPasien",
-        { query: input } // Mengirimkan parameter dalam body
+        { query: input }
       );
 
       const { data } = response;
       if (data && data.found) {
         toast.success(`Pasien ditemukan: ${data.data.nama}`);
-        router.push(`/daftar?noreg=${data.data.noreg}`); // Menyertakan noreg di URL
+        router.push(`/daftar?noreg=${data.data.noreg}`);
       } else {
-        toast.error(
-          "Data pasien tidak ditemukan, silahkan mengisi form data pasien baru."
-        );
+        toast.error("Data pasien tidak ditemukan. Silakan daftar baru.");
         router.push(`/daftar`);
       }
     } catch (error) {
@@ -42,31 +40,70 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-tr from-white via-blue-100 to-blue-200 flex items-center justify-center p-4">
       <Toaster position="top-right" />
-      <div className="bg-white p-6 rounded shadow-md w-full max-w-md space-y-4">
-        <h1 className="text-2xl font-bold text-center text-gray-700">
-          Cek Data Pasien
-        </h1>
-        <p className="text-center text-gray-500 text-sm">
-          Masukkan NIK atau No. HP untuk memeriksa apakah pasien sudah pernah
-          terdaftar di SIMRS.
+
+      <motion.div
+        initial={{ y: 60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-8 border border-blue-200"
+      >
+        {/* Logo */}
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="flex justify-center mb-4"
+        >
+          <img
+            src="/logo-pemkot.png" // ganti sesuai logo kamu
+            alt="Logo Pemkot"
+            className="h-16 w-16 object-contain"
+          />
+          <img
+            src="/logo-rs.png" // ganti sesuai logo kamu
+            alt="Logo Rumah Sakit"
+            className="h-16 w-16 object-contain"
+          />
+        </motion.div>
+
+        <motion.h1
+          className="text-2xl font-bold text-center text-blue-800 mb-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          Sistem Informasi Pasien
+        </motion.h1>
+
+        <p className="text-center text-gray-600 mb-6 text-sm">
+          Masukkan <span className="font-medium">NIK</span> atau{" "}
+          <span className="font-medium">No. HP</span> untuk memeriksa data
+          pasien.
         </p>
-        <input
+
+        <motion.input
           type="text"
-          placeholder="NIK atau No. HP"
+          placeholder="Contoh: 1234567890"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className="w-full p-2 border rounded text-gray-700"
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 mb-4"
+          initial={{ scale: 0.95, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.5, duration: 0.4 }}
         />
-        <button
+
+        <motion.button
           onClick={handleCheck}
           disabled={loading}
-          className="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          whileTap={{ scale: 0.97 }}
+          whileHover={{ scale: 1.02 }}
+          className="w-full bg-blue-600 text-white font-semibold py-3 rounded-lg hover:bg-blue-700 transition-all duration-300 disabled:opacity-60"
         >
-          {loading ? "Memeriksa..." : "Cek Data"}
-        </button>
-      </div>
+          {loading ? "Memeriksa..." : "CEK SEKARANG"}
+        </motion.button>
+      </motion.div>
     </div>
   );
 }
