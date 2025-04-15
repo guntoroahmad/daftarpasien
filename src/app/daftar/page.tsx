@@ -126,24 +126,28 @@ export default function DataPasien() {
             name="nama"
             value={form.nama}
             onChange={handleChange}
+            placeholder="Nama Pasien"
           />
           <Input
             label="NIK"
             name="nik"
             value={form.nik}
             onChange={handleChange}
+            placeholder="NIK"
           />
           <Input
             label="No. Telepon"
             name="telp"
             value={form.telp}
             onChange={handleChange}
+            placeholder="No. Telepon"
           />
           <Input
             label="Tempat Lahir"
             name="tmp_lahir"
             value={form.tmp_lahir}
             onChange={handleChange}
+            placeholder="Tempat Lahir"
           />
           <Input
             type="date"

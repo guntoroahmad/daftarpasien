@@ -211,10 +211,10 @@ export default function RegistrasiPasien() {
                         type='button'
                         onClick={Registrasi}
                         className='w-full bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-md py-2 hover:bg-blue-900 hover:text-white'
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        /* whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }} */
                     >
-                        Registrasi
+                        REGISTRASI
                     </motion.button>
                 </div>
                 <div >
@@ -223,25 +223,25 @@ export default function RegistrasiPasien() {
                         type='button'
                         onClick={() => router.push('/Halaman/UpdateRegPasien')}                        
                         className='w-full bg-gradient-to-r from-yellow-500 to-red-500 text-white rounded-md py-2 hover:bg-blue-900 hover:text-white'
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        /* whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }} */
                     >
-                        Update Registrasi
+                       UPDATE REGISTRASI
                     </motion.button>
                 </div>
 
-                <div >
+                {/* <div >
                     <motion.button
                         disabled={stateTombolRegistrasi}
                         type='button'
                         onClick={() => router.push('/')}                        
                         className='w-full bg-gradient-to-r from-blue-500 to-orange-500 text-white rounded-md py-2 hover:bg-blue-900 hover:text-white'
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
+                        // whileHover={{ scale: 1.05 }}
+                        // whileTap={{ scale: 0.95 }}
                     >
                         Dashboard
                     </motion.button>
-                </div>
+                </div> */}
             </form>
         </motion.div>
     );

@@ -40,7 +40,8 @@ export default function UpdateRegPasien() {
     return (
         <div className="min-h-screen bg-gradient-to-tr from-white via-blue-100 to-blue-200 p-6 mb-8 flex flex-col justify-center">
             <Toaster position="top-right" />
-            <h2 className="text-lg font-bold mb-4 text-blue-900 text-center">UPDATE REGISTRASI MEDICAL CHECK UP</h2>
+            <h1 className="text-2xl font-bold mb-1 text-center text-black-500">RSUD I.A. MOEIS SAMARINDA</h1>
+            <h2 className="text-lg font-bold mb-5 text-blue-900 text-center">UPDATE REGISTRASI MEDICAL CHECK UP</h2>
             <form className="w-full space-y-4 bg-card p-8 rounded-2xl shadow-lg space-y-4 border border-border">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">MASUKKAN NO WHATSAPP</label>
@@ -110,7 +111,7 @@ export default function UpdateRegPasien() {
                         onClick={() => router.push('/Halaman/RegistrasiPasien')}
                         type='button'
                         className='w-full bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-md py-2 hover:bg-blue-900 hover:text-white'>
-                        Registrasi Baru
+                        REGISTRASI BARU
                     </button>
                 </div>
             </form>
