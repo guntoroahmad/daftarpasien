@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import ipApp from "@/koneksi/IpApp";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -19,10 +20,9 @@ export default function Home() {
 
     setLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:5001/api/daftar/cekPasien",
-        { query: input }
-      );
+      const response = await axios.post(ipApp + "api/daftar/cekPasien", {
+        query: input,
+      });
 
       const { data } = response;
       if (data && data.found) {

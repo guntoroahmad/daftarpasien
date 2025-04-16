@@ -1,7 +1,17 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
+const dayjs = require("dayjs");
 const koneksi = require("../config/db");
+
+function queryAsync(sql, params) {
+  return new Promise((resolve, reject) => {
+    koneksi.query(sql, params, (error, results) => {
+      if (error) return reject(error);
+      resolve(results);
+    });
+  });
+}
 
 // 🟢 **Cek Data Pasien**
 router.post("/cekPasien", (req, res) => {
@@ -149,6 +159,97 @@ router.put("/updatePasien/:noreg", async (req, res) => {
     res.json({ message: "Data pasien berhasil diperbarui" });
   } catch (err) {
     res.status(500).json({ message: "Gagal update data pasien" });
+  }
+});
+
+// ✅ GET: Generate Token for update
+router.post("/generateToken/:noreg", async (req, res) => {
+  const { noreg } = req.params;
+  console.log("Dapat noreg:", noreg);
+
+  try {
+    const token = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiredAt = dayjs().add(5, "minute").format("YYYY-MM-DD HH:mm:ss");
+    console.log("Token yang dihasilkan:", token);
+
+    // Simpan token ke database
+    await queryAsync(
+      "UPDATE regpasien SET password_android = ?, token_expired_at = ? WHERE noreg = ?",
+      [token, expiredAt, noreg]
+    );
+    console.log("Token berhasil disimpan di database");
+
+    // Ambil nomor telp
+    const pasien = await queryAsync(
+      "SELECT telp FROM regpasien WHERE noreg = ?",
+      [noreg]
+    );
+    console.log("Hasil query pasien:", pasien);
+
+    const nomor = pasien[0]?.telp;
+    console.log("Nomor yang diambil:", nomor);
+
+    if (nomor) {
+      const responseWA = await axios.post(
+        "https://app.wapanels.com/api/create-message",
+        {
+          appkey: "022269fe-e735-47be-b8b4-56e60defad00",
+          authkey: "JOw8gewhNzhAQdJDjng9uQg4LxgdYwZW8l6uD2XnbiWq3G1HQa",
+          to: `62${nomor.replace(/^0/, "")}`,
+          message: `Yth. Pasien RSUD Inche Abdoel Moeis Samarinda,
+
+Berikut adalah *token verifikasi* Anda untuk melakukan perubahan data di sistem SIMRS: *_${token}_*
+
+Mohon untuk tidak membagikan token ini kepada pihak lain demi menjaga kerahasiaan data pribadi Anda di Rumah Sakit.
+
+Terima kasih atas perhatian dan kerjasamanya.`,
+        }
+      );
+
+      console.log("WA response:", responseWA.data);
+    }
+
+    return res.json({ success: true, token });
+  } catch (error) {
+    console.error("Terjadi error:", error);
+    return res
+      .status(500)
+      .json({ message: "Gagal membuat token", error: error.message });
+  }
+});
+
+// ✅ POST: Verifikasi Token for update
+router.post("/verifikasiToken", async (req, res) => {
+  const { noreg, token } = req.body;
+
+  try {
+    // return res.send(token);
+    const result = await queryAsync(
+      "SELECT * FROM regpasien WHERE noreg = ? and password_android = ?",
+      [noreg, token]
+    );
+    // console.log("Hasil query pasien:", result);
+
+    if (result.length === 0) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Token tidak valid." });
+    }
+
+    const data = result[0];
+    // return res.send(new Date())
+
+    if (new Date(data.token_expired_at) < new Date()) {
+      return res
+        .status(401)
+        .json({ success: false, message: "Token sudah kedaluwarsa." });
+    }
+
+    // Kalau token valid dan belum expired
+    res.json({ success: true, message: "Token valid." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: "Verifikasi gagal." });
   }
 });
 

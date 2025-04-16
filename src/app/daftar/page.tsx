@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import ipApp from "@/koneksi/IpApp";
 import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 
@@ -24,6 +25,9 @@ export default function DataPasien() {
   const noreg = searchParams.get("noreg");
   const [alamatSama, setAlamatSama] = useState(false);
   const today = new Date().toISOString().split("T")[0];
+  const [isGettingToken, setIsGettingToken] = useState(false);
+  const [showTokenModal, setShowTokenModal] = useState(false);
+  const [inputToken, setInputToken] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -48,10 +52,7 @@ export default function DataPasien() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(
-        "http://localhost:5001/api/daftar/daftarPasien",
-        form
-      );
+      const res = await axios.post(ipApp + "api/daftar/daftarPasien", form);
       toast.success(res.data.message || "Pasien berhasil didaftarkan!");
       setForm({
         nama: "",
@@ -74,15 +75,47 @@ export default function DataPasien() {
     }
   };
 
+  const handleGetToken = async () => {
+    setIsGettingToken(true);
+    try {
+      const res = await axios.post(ipApp + `api/daftar/generateToken/${noreg}`);
+      toast.success("Token berhasil dikirim ke WhatsApp!");
+
+      // Enable tombol kembali setelah 3 detik
+      setTimeout(() => {
+        setIsGettingToken(false);
+      }, 3000);
+    } catch (error) {
+      toast.error("Gagal mendapatkan token.");
+      setIsGettingToken(false);
+    }
+  };
+
   const handleUpdate = async () => {
     try {
-      await axios.put(
-        `http://localhost:5001/api/daftar/updatePasien/${noreg}`,
-        form
-      );
+      await axios.put(ipApp + `api/daftar/updatePasien/${noreg}`, form);
       toast.success("Data berhasil diperbarui");
     } catch {
       toast.error("Gagal memperbarui data");
+    }
+  };
+
+  const handleVerifyTokenAndUpdate = async () => {
+    try {
+      const res = await axios.post(ipApp + "api/daftar/verifikasiToken", {
+        noreg,
+        token: inputToken,
+      });
+
+      if (res.data.success) {
+        await handleUpdate(); // fungsi update sudah ada
+        setShowTokenModal(false);
+        setInputToken("");
+      } else {
+        toast.error("Token tidak valid atau telah kedaluwarsa.");
+      }
+    } catch (error) {
+      toast.error("Verifikasi token gagal.");
     }
   };
 
@@ -93,9 +126,7 @@ export default function DataPasien() {
   useEffect(() => {
     const fetchPasien = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5001/api/daftar/detailPasien/${noreg}`
-        );
+        const res = await axios.get(ipApp + `api/daftar/detailPasien/${noreg}`);
         if (res.data) {
           const pasien = res.data;
           const tgl = new Date(pasien.tgl_lahir);
@@ -136,7 +167,7 @@ export default function DataPasien() {
             placeholder="NIK"
           />
           <Input
-            label="No. Telepon"
+            label="No. Telepon (No. WA yang aktif)"
             name="telp"
             value={form.telp}
             onChange={handleChange}
@@ -252,7 +283,18 @@ export default function DataPasien() {
             <>
               <button
                 type="button"
-                onClick={handleUpdate}
+                onClick={handleGetToken}
+                disabled={isGettingToken}
+                className={`flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:bg-yellow-400 text-white py-2 rounded-md transition ${
+                  isGettingToken ? "opacity-50 cursor-not-allowed" : ""
+                }`}
+              >
+                {isGettingToken ? "MENGAMBIL TOKEN..." : "AMBIL TOKEN"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowTokenModal(true)}
                 className="flex-1 bg-gradient-to-r from-yellow-500 to-red-500 hover:bg-yellow-400 text-white py-2 rounded-md transition"
               >
                 UPDATE DATA
@@ -275,6 +317,34 @@ export default function DataPasien() {
           )}
         </div>
       </form>
+      {showTokenModal && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md space-y-4">
+            <h2 className="text-xl font-semibold">Masukkan Token Verifikasi</h2>
+            <input
+              type="text"
+              value={inputToken}
+              onChange={(e) => setInputToken(e.target.value)}
+              placeholder="Masukkan token"
+              className="w-full p-2 border rounded-md"
+            />
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setShowTokenModal(false)}
+                className="px-4 py-2 bg-gray-300 rounded-md"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleVerifyTokenAndUpdate}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md"
+              >
+                Verifikasi & Update
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
