@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "REGISTRASI PASIEN",
   description: "Sistem Registrasi Pasien Baru di SIMRS",
+  icons: {
+    icon: "/logo-rsud.png",
+  },
 };
 
 export default function RootLayout({
@@ -31,8 +34,9 @@ export default function RootLayout({
           {children}
         </main>
         <footer className="text-center text-sm text-gray-500 mt-10 mb-4">
-          © {new Date().getFullYear()} SIMRS RSUD Inche Abdoel Moeis.<br/>
-           All rights reserved.
+          © {new Date().getFullYear()} SIMRS RSUD Inche Abdoel Moeis.
+          <br />
+          All rights reserved.
         </footer>
       </body>
     </html>

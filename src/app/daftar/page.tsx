@@ -68,7 +68,7 @@ export default function DataPasien() {
       });
       setAlamatSama(false);
       setTimeout(() => {
-        router.push("http://10.200.1.10:3000/Halaman/RegistrasiPasien");
+        router.push("../Halaman/RegistrasiPasien");
       }, 2500);
     } catch (err) {
       toast.error(err.response?.data?.message || "Terjadi kesalahan.");
