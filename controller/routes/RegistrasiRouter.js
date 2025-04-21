@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const koneksi = require("../config/db");
+const koneksi = require("../config/Database");
 const koneksi124 = require("../config/Db124");
 var request = require("request");
 router.get("/cekMasterPasien", async (req, res) => {

@@ -20,7 +20,7 @@ export default function Home() {
 
     setLoading(true);
     try {
-      const response = await axios.post(ipApp + "api/daftar/cekPasien", {
+      const response = await axios.post(ipApp + "daftar/cekPasien", {
         query: input,
       });
 

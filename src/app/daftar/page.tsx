@@ -52,7 +52,7 @@ export default function DataPasien() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(ipApp + "api/daftar/daftarPasien", form);
+      const res = await axios.post(ipApp + "daftar/daftarPasien", form);
       toast.success(res.data.message || "Pasien berhasil didaftarkan!");
       setForm({
         nama: "",
@@ -78,7 +78,7 @@ export default function DataPasien() {
   const handleGetToken = async () => {
     setIsGettingToken(true);
     try {
-      const res = await axios.post(ipApp + `api/daftar/generateToken/${noreg}`);
+      const res = await axios.post(ipApp + `daftar/generateToken/${noreg}`);
       toast.success("Token berhasil dikirim ke WhatsApp!");
 
       // Enable tombol kembali setelah 3 detik
@@ -93,7 +93,7 @@ export default function DataPasien() {
 
   const handleUpdate = async () => {
     try {
-      await axios.put(ipApp + `api/daftar/updatePasien/${noreg}`, form);
+      await axios.put(ipApp + `daftar/updatePasien/${noreg}`, form);
       toast.success("Data berhasil diperbarui");
     } catch {
       toast.error("Gagal memperbarui data");
@@ -102,7 +102,7 @@ export default function DataPasien() {
 
   const handleVerifyTokenAndUpdate = async () => {
     try {
-      const res = await axios.post(ipApp + "api/daftar/verifikasiToken", {
+      const res = await axios.post(ipApp + "daftar/verifikasiToken", {
         noreg,
         token: inputToken,
       });
@@ -126,7 +126,7 @@ export default function DataPasien() {
   useEffect(() => {
     const fetchPasien = async () => {
       try {
-        const res = await axios.get(ipApp + `api/daftar/detailPasien/${noreg}`);
+        const res = await axios.get(ipApp + `daftar/detailPasien/${noreg}`);
         if (res.data) {
           const pasien = res.data;
           const tgl = new Date(pasien.tgl_lahir);

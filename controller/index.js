@@ -12,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 // Gunakan Router
-app.use("/api/daftar", daftarRoutes); // Pastikan path ini sesuai
+app.use("/daftar", daftarRoutes); // Pastikan path ini sesuai
 app.use("/registrasi", RegistrasiRouter);
 // Jalankan server
 app.listen(PORT, () => {
