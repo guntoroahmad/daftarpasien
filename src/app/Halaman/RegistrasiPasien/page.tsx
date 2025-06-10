@@ -9,7 +9,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { motion } from "framer-motion"; // Import motion
 export default function RegistrasiPasien() {
   const router = useRouter();
-  const [stateShowModal, setStateShowModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [stateForm, setStateForm] = useState({
     nik: "",
     noWa: "",
@@ -41,7 +41,6 @@ export default function RegistrasiPasien() {
           })
             .then((res) => {
               if (res.data.success) {
-                toast.success("Registrasi berhasil");
                 setStateForm({
                   nik: "",
                   noWa: "",
@@ -51,25 +50,31 @@ export default function RegistrasiPasien() {
                   keperluan: "",
                 });
 
-                // Tutup modal jika dibuka
-                setStateShowModal(false);
+                setShowSuccessModal(true); // Tampilkan modal sukses
+
+                // Redirect setelah 3 detik
+                setTimeout(() => {
+                  setShowSuccessModal(false);
+                  router.push("/");
+                }, 3000);
               } else {
                 toast.error("Terjadi kesalahan, coba kembali");
               }
             })
-            .catch((err) => {
+            .catch(() => {
               toast.error("Terjadi kesalahan, coba kembali");
             });
         }
       })
       .catch((err) => {
         toast.dismiss();
-        toast.error(err.response.data);
+        toast.error(err.response?.data || "Terjadi kesalahan");
       })
       .finally(() => {
         setStateTombolRegistrasi(false);
       });
   };
+
 
   const GolDarah = [
     { value: "A", label: "A" },
@@ -92,11 +97,21 @@ export default function RegistrasiPasien() {
       className="min-h-screen bg-gradient-to-tr from-white via-blue-100 to-blue-200 p-4 flex flex-col justify-center"
     >
       <Toaster position="top-right" />
-      <Modal
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+          <div className="bg-white rounded-lg p-6 shadow-lg text-center max-w-md w-full">
+            <h2 className="text-xl font-bold mb-2">🎉 Registrasi Berhasil</h2>
+            <p className="mb-4">Silakan menuju ke Poli MCU</p>
+            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-green-500 mx-auto" />
+            <p className="text-sm text-gray-500 mt-3">Mengalihkan ke halaman utama...</p>
+          </div>
+        </div>
+      )}
+      {/* <Modal
         isOpen={stateShowModal}
         onClose={() => setStateShowModal(false)}
         setStateForm={setStateForm}
-      />
+      /> */}
       <h1 className="text-2xl font-bold mb-1 text-center text-black-500">
         RSUD I.A. MOEIS SAMARINDA
       </h1>{" "}
@@ -250,8 +265,8 @@ export default function RegistrasiPasien() {
             type="button"
             onClick={Registrasi}
             className="w-full bg-gradient-to-r from-green-500 to-teal-500 text-white rounded-md py-2 hover:bg-blue-900 hover:text-white"
-            /* whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }} */
+          /* whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }} */
           >
             REGISTRASI
           </motion.button>
@@ -262,8 +277,8 @@ export default function RegistrasiPasien() {
             type="button"
             onClick={() => router.push("/Halaman/UpdateRegPasien")}
             className="w-full bg-gradient-to-r from-yellow-500 to-red-500 text-white rounded-md py-2 hover:bg-blue-900 hover:text-white"
-            /* whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }} */
+          /* whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }} */
           >
             UPDATE DATA REGISTRASI
           </motion.button>
