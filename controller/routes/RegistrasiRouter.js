@@ -94,8 +94,8 @@ router.post("/insertRegistrasi", async (req, res) => {
       url: "https://app.wapanels.com/api/create-message",
       headers: {},
       formData: {
-        appkey: "022269fe-e735-47be-b8b4-56e60defad00",
-        authkey: "JOw8gewhNzhAQdJDjng9uQg4LxgdYwZW8l6uD2XnbiWq3G1HQa",
+        appkey: "27ee5f8a-91fe-4d2f-91e6-d6a74e0c18eb",
+        authkey: "ofyLKwmacMfwl1xdDsOz7TbIgw27LnOzLUsVfBBThmlW1dil1W",
         to: params.form.noWa.startsWith("62")
           ? params.form.noWa
           : "62" + params.form.noWa.replace(/^0+/, ""),

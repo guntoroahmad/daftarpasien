@@ -120,7 +120,7 @@ export default function DataPasien() {
   };
 
   const handleDaftarAntrian = () => {
-    router.push("/Halaman/RegistrasiPasien");
+    router.push(`/Halaman/RegistrasiPasien`);
   };
 
   useEffect(() => {
@@ -285,9 +285,8 @@ export default function DataPasien() {
                 type="button"
                 onClick={handleGetToken}
                 disabled={isGettingToken}
-                className={`flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:bg-yellow-400 text-white py-2 rounded-md transition ${
-                  isGettingToken ? "opacity-50 cursor-not-allowed" : ""
-                }`}
+                className={`flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:bg-yellow-400 text-white py-2 rounded-md transition ${isGettingToken ? "opacity-50 cursor-not-allowed" : ""
+                  }`}
               >
                 {isGettingToken ? "MENGAMBIL TOKEN..." : "AMBIL TOKEN"}
               </button>

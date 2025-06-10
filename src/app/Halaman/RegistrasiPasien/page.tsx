@@ -265,7 +265,7 @@ export default function RegistrasiPasien() {
             /* whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }} */
           >
-            UPDATE REGISTRASI
+            UPDATE DATA REGISTRASI
           </motion.button>
         </div>
 

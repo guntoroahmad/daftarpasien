@@ -193,8 +193,8 @@ router.post("/generateToken/:noreg", async (req, res) => {
       const responseWA = await axios.post(
         "https://app.wapanels.com/api/create-message",
         {
-          appkey: "022269fe-e735-47be-b8b4-56e60defad00",
-          authkey: "JOw8gewhNzhAQdJDjng9uQg4LxgdYwZW8l6uD2XnbiWq3G1HQa",
+          appkey: "27ee5f8a-91fe-4d2f-91e6-d6a74e0c18eb",
+          authkey: "ofyLKwmacMfwl1xdDsOz7TbIgw27LnOzLUsVfBBThmlW1dil1W",
           to: `62${nomor.replace(/^0/, "")}`,
           message: `Yth. Pasien RSUD Inche Abdoel Moeis Samarinda,
 
@@ -303,8 +303,8 @@ router.post("/set", async (req, res) => {
     const response = await axios.post(
       "https://app.wapanels.com/api/create-message",
       {
-        appkey: "80ca53d0-3610-4424-a55b-66af744009d1",
-        authkey: "Fihbt62abZaavJvyD6Ey3qwjFaFgUwjwpJxmNCNRcHomGesF9j",
+        appkey: "27ee5f8a-91fe-4d2f-91e6-d6a74e0c18eb",
+        authkey: "ofyLKwmacMfwl1xdDsOz7TbIgw27LnOzLUsVfBBThmlW1dil1W",
         to: `62${phone.replace(/^0/, "")}`, // Hilangkan '0' di depan nomor
         message: `Reminder: ${message} - ${date}`,
       },
