@@ -28,6 +28,7 @@ export default function DataPasien() {
   const [isGettingToken, setIsGettingToken] = useState(false);
   const [showTokenModal, setShowTokenModal] = useState(false);
   const [inputToken, setInputToken] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -120,6 +121,7 @@ export default function DataPasien() {
   };
 
   const handleDaftarAntrian = () => {
+    setLoading(true);
     router.push(`/Halaman/RegistrasiPasien`);
   };
 
@@ -285,8 +287,9 @@ export default function DataPasien() {
                 type="button"
                 onClick={handleGetToken}
                 disabled={isGettingToken}
-                className={`flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:bg-yellow-400 text-white py-2 rounded-md transition ${isGettingToken ? "opacity-50 cursor-not-allowed" : ""
-                  }`}
+                className={`flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:bg-yellow-400 text-white py-2 rounded-md transition ${
+                  isGettingToken ? "opacity-50 cursor-not-allowed" : ""
+                }`}
               >
                 {isGettingToken ? "MENGAMBIL TOKEN..." : "AMBIL TOKEN"}
               </button>
@@ -301,9 +304,38 @@ export default function DataPasien() {
               <button
                 type="button"
                 onClick={handleDaftarAntrian}
-                className="flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:bg-blue-500 text-white py-2 rounded-md transition"
+                disabled={loading}
+                className={`flex-1 bg-gradient-to-r from-green-500 to-teal-500 hover:bg-teal-600 text-white py-2 rounded-md transition duration-200 ${
+                  loading ? "opacity-60 cursor-not-allowed" : ""
+                }`}
               >
-                DAFTAR ANTRIAN
+                {loading ? (
+                  <div className="flex items-center justify-center gap-2">
+                    <svg
+                      className="animate-spin h-5 w-5 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                      ></path>
+                    </svg>
+                    <span>Loading...</span>
+                  </div>
+                ) : (
+                  "DAFTAR ANTRIAN"
+                )}
               </button>
             </>
           ) : (

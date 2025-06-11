@@ -2,7 +2,28 @@ const express = require("express");
 const router = express.Router();
 const koneksi = require("../config/Database");
 const koneksi124 = require("../config/Db124");
+const moment = require("moment");
 var request = require("request");
+
+// Jika suatu saat diperlukan untuk semua poli pendaftarannya bisa di buka ini -- 11/06/2025
+const jlayMapping = {
+  9: "0000000000100000010000", // THT
+  12: "0100000000000000010000000", // Gigi
+  7: "0000000000001000010000", // Saraf
+  2: "000001000000000001000", // Bedah
+  13: "000000000000000001001", // Jantung
+  20: "000000000000010001000", // Rehab Medik
+  1: "000010000000000001000", // Dalam
+  15: "000000010000000001000", // Fisio
+  4: "0001000000000000010000", // OBGYN
+  10: "0000000010000000010000", // Mata
+  11: "0000000001000000010000", // Kulit dan Kelamin
+  15: "0000000000000010010000", // Orthopedi
+  3: "0010000000000000010000", // Anak
+  16: "0000000000000000010001", // Paru
+  8: "0000000000010000010000", // Jiwa
+};
+
 router.get("/cekMasterPasien", async (req, res) => {
   const params = req.query;
   // return res.send(params);
@@ -49,28 +70,67 @@ router.post("/insertKodeRegistrasi", async (req, res) => {
 });
 
 router.post("/insertRegistrasi", async (req, res) => {
-  try {
-    const params = req.body;
-    // return res.send(params);
-    // Ambil dua digit terakhir tahun sekarang
-    const tahun = new Date().getFullYear().toString().slice(-2); // '25'
+  const params = req.body;
+  const jlay = "0000000000000000010000010";
+  const tglLahir = moment(params.tgl_lahir);
+  const sekarang = moment();
+  const umur = sekarang.diff(tglLahir, "years");
+  const bulan = sekarang.diff(tglLahir, "months") % 12;
+  const hari = sekarang.diff(tglLahir, "days") % 30;
+  const tahun = new Date().getFullYear().toString().slice(-2); // '25'
 
-    // Cari urutan terakhir
+  // Ambil koneksi dari pool
+  const conn = await koneksi.getConnection();
+
+  try {
+    await conn.beginTransaction();
+
+    await conn.query("LOCK TABLES kunjung WRITE");
+
+    const [[hasilGetLastNo]] = await conn.query(
+      `
+      SELECT LPAD(coalesce(max(right(no,6))+1,1),6,0) as urutan 
+      FROM kunjung 
+      WHERE year(tgl_masuk)= ?`,
+      [moment().format("Y")]
+    );
+
+    const noBaru = moment().format("YY") + hasilGetLastNo.urutan;
+
+    const data = {
+      no: noBaru,
+      tgl_masuk: moment().format("YYYY-MM-DD HH:mm:ss"),
+      tgl_keluar: moment().format("YYYY-MM-DD HH:mm:ss"),
+      noreg: params.noreg,
+      no_jam: params.no_jam ? "" : params.no_jam,
+      j_lay: jlay,
+      kat_pel: 0,
+      id_pembiayaan: 1,
+      ruang: "Poliklinik",
+      th: umur,
+      bl: bulan,
+      hr: hari,
+    };
+
+    await conn.query("INSERT INTO kunjung SET ?", [data]);
+
+    await conn.query("UNLOCK TABLES");
+    await conn.commit();
+
     const queryMax = `
       SELECT MAX(CAST(SUBSTRING(no, 6) AS UNSIGNED)) AS max_urut
       FROM surkes
       WHERE SUBSTRING(no, 4, 2) = ?
     `;
-    const [[hasil]] = await koneksi.query(queryMax, [tahun]);
+    const [[hasil]] = await conn.query(queryMax, [tahun]);
     const urutanBaru = (hasil.max_urut || 0) + 1;
     const urutanFormatted = urutanBaru.toString().padStart(4, "0");
     const nomorBaru = `SK-${tahun}${urutanFormatted}`;
 
-    // Insert data ke tabel surkes
     const queryInsert = `
       INSERT INTO surkes SET ?
     `;
-    await koneksi.query(queryInsert, [
+    await conn.query(queryInsert, [
       {
         no: nomorBaru,
         dari: new Date(),
@@ -89,6 +149,8 @@ router.post("/insertRegistrasi", async (req, res) => {
         telp: params.form.noWa,
       },
     ]);
+
+    // WA Notification
     var options = {
       method: "POST",
       url: "https://app.wapanels.com/api/create-message",
@@ -104,15 +166,17 @@ router.post("/insertRegistrasi", async (req, res) => {
     };
 
     request(options, function (error, response) {
-      if (error) throw new Error(error);
-      console.log(response.body);
+      if (error) console.error("WA Error:", error);
+      else console.log("WA sent:", response.body);
     });
-    return res.send({ success: true, no: nomorBaru });
+
+    res.send({ success: true, no: nomorBaru });
   } catch (err) {
     console.error("Error saat insert data registrasi:", err);
-    return res
-      .status(500)
-      .send({ error: "Terjadi kesalahan saat menyimpan data." });
+    await conn.rollback();
+    res.status(500).send({ error: "Terjadi kesalahan saat menyimpan data." });
+  } finally {
+    conn.release(); // Pastikan koneksi dilepas kembali ke pool
   }
 });
 
