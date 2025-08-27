@@ -216,7 +216,9 @@ Berikut adalah *token verifikasi* Anda untuk melakukan perubahan data di sistem 
 
 Mohon untuk tidak membagikan token ini kepada pihak lain demi menjaga kerahasiaan data pribadi Anda di Rumah Sakit.
 
-Terima kasih atas perhatian dan kerjasamanya.`,
+Terima kasih atas perhatian dan kerjasamanya.
+
+*_Mohon untuk tidak membalas pesan ini, karena pesan ini tergenerate langsung dari sistem._*`,
           countryCode: "62", // optional
         },
         {
@@ -307,6 +309,5 @@ router.delete("/deletePasien/:id", (req, res) => {
     res.status(200).json({ message: "Pasien berhasil dihapus" });
   });
 });
-
 
 module.exports = router;

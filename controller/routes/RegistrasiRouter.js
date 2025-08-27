@@ -72,8 +72,10 @@ router.post("/insertKodeRegistrasi", async (req, res) => {
 router.post("/insertRegistrasi", async (req, res) => {
   const params = req.body;
   const jlay = "0000000000000000010000010";
-  const tglLahir = moment(params.tgl_lahir);
-  const sekarang = moment();
+  const tglLahir = moment(params.tgl_lahir)
+    .utcOffset("+08:00")
+    .format("YYYY-MM-DD");
+  const sekarang = moment().utcOffset("+08:00");
   const umur = sekarang.diff(tglLahir, "years");
   const bulan = sekarang.diff(tglLahir, "months") % 12;
   const hari = sekarang.diff(tglLahir, "days") % 30;
@@ -110,6 +112,7 @@ router.post("/insertRegistrasi", async (req, res) => {
       th: umur,
       bl: bulan,
       hr: hari,
+      created_at: moment().format("YYYY-MM-DD HH:mm:ss"),
     };
 
     await conn.query("INSERT INTO kunjung SET ?", [data]);
@@ -137,7 +140,7 @@ router.post("/insertRegistrasi", async (req, res) => {
         noreg: params.noreg,
         nama: params.nama,
         tmp_lahir: params.tmp_lahir,
-        tgl_lahir: params.tgl_lahir,
+        tgl_lahir: tglLahir,
         sex: params.sex,
         agama: params.agama,
         pekerjaan: params.pekerjaan,
@@ -174,7 +177,8 @@ router.post("/insertRegistrasi", async (req, res) => {
       formData: {
         target: params.form.noWa,
         message: `Hai ${params.nama} registrasi kamu berhasil dilakukan dengan no registrasi ${nomorBaru}. 
-        Silahkan konfirmasi ke petugas MCU RSUD I.A Moeis Samarinda. Terima Kasih`,
+        Silahkan konfirmasi ke petugas MCU RSUD I.A Moeis Samarinda. Terima Kasih.
+        *_Mohon untuk tidak membalas pesan ini, karena pesan ini tergenerate langsung dari sistem._*`,
         countryCode: "62", // optional
       },
     };
