@@ -177,8 +177,10 @@ router.post("/insertRegistrasi", async (req, res) => {
       formData: {
         target: params.form.noWa,
         message: `Hai ${params.nama} registrasi kamu berhasil dilakukan dengan no registrasi ${nomorBaru}. 
-        Silahkan konfirmasi ke petugas MCU RSUD I.A Moeis Samarinda. Terima Kasih.
-        *_Mohon untuk tidak membalas pesan ini, karena pesan ini tergenerate langsung dari sistem._*`,
+        
+Silahkan konfirmasi ke petugas MCU RSUD I.A Moeis Samarinda. Terima Kasih. 
+
+*_Mohon untuk tidak membalas pesan ini, karena pesan ini tergenerate langsung dari sistem._*`,
         countryCode: "62", // optional
       },
     };
