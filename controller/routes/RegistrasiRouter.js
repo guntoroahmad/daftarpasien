@@ -151,7 +151,7 @@ router.post("/insertRegistrasi", async (req, res) => {
     ]);
 
     // WA Notification
-    var options = {
+    /* var options = {
       method: "POST",
       url: "https://app.wapanels.com/api/create-message",
       headers: {},
@@ -162,6 +162,20 @@ router.post("/insertRegistrasi", async (req, res) => {
           ? params.form.noWa
           : "62" + params.form.noWa.replace(/^0+/, ""),
         message: `Hai ${params.nama} registrasi kamu berhasil dilakukan dengan no registrasi ${nomorBaru}. silahkan konfirmasi ke petugas MCU RSUD I.A Moeis Samarinda. Terima Kasih`,
+      },
+    }; */
+
+    var options = {
+      method: "POST",
+      url: "https://api.fonnte.com/send",
+      headers: {
+        Authorization: "YpCVMcgJoWGirqrFaMZH",
+      },
+      formData: {
+        target: params.form.noWa,
+        message: `Hai ${params.nama} registrasi kamu berhasil dilakukan dengan no registrasi ${nomorBaru}. 
+        Silahkan konfirmasi ke petugas MCU RSUD I.A Moeis Samarinda. Terima Kasih`,
+        countryCode: "62", // optional
       },
     };
 

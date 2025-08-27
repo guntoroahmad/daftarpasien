@@ -190,7 +190,7 @@ router.post("/generateToken/:noreg", async (req, res) => {
     console.log("Nomor yang diambil:", nomor);
 
     if (nomor) {
-      const responseWA = await axios.post(
+      /* const responseWA = await axios.post(
         "https://app.wapanels.com/api/create-message",
         {
           appkey: "27ee5f8a-91fe-4d2f-91e6-d6a74e0c18eb",
@@ -204,9 +204,29 @@ Mohon untuk tidak membagikan token ini kepada pihak lain demi menjaga kerahasiaa
 
 Terima kasih atas perhatian dan kerjasamanya.`,
         }
+      ); */
+
+      const response = await axios.post(
+        "https://api.fonnte.com/send",
+        {
+          target: nomor,
+          message: `Yth. Pasien RSUD Inche Abdoel Moeis Samarinda,
+
+Berikut adalah *token verifikasi* Anda untuk melakukan perubahan data di sistem SIMRS: *_${token}_*
+
+Mohon untuk tidak membagikan token ini kepada pihak lain demi menjaga kerahasiaan data pribadi Anda di Rumah Sakit.
+
+Terima kasih atas perhatian dan kerjasamanya.`,
+          countryCode: "62", // optional
+        },
+        {
+          headers: {
+            Authorization: "YpCVMcgJoWGirqrFaMZH",
+          },
+        }
       );
 
-      console.log("WA response:", responseWA.data);
+      console.log("WA response:", response.data);
     }
 
     return res.json({ success: true, token });
@@ -288,46 +308,5 @@ router.delete("/deletePasien/:id", (req, res) => {
   });
 });
 
-// 🟢 **Set Reminder via WhatsApp**
-router.post("/set", async (req, res) => {
-  const { phone, message, date } = req.body;
-  const reminderDate = new Date(date);
-  reminderDate.setDate(reminderDate.getDate() - 3); // Kirim reminder 3 hari sebelum tanggal kontrol
-
-  // Jika hari ini adalah reminder date, kirim pesan WhatsApp
-  /* if (
-    new Date().toISOString().split("T")[0] ===
-    reminderDate.toISOString().split("T")[0]
-  ) { */
-  try {
-    const response = await axios.post(
-      "https://app.wapanels.com/api/create-message",
-      {
-        appkey: "27ee5f8a-91fe-4d2f-91e6-d6a74e0c18eb",
-        authkey: "ofyLKwmacMfwl1xdDsOz7TbIgw27LnOzLUsVfBBThmlW1dil1W",
-        to: `62${phone.replace(/^0/, "")}`, // Hilangkan '0' di depan nomor
-        message: `Reminder: ${message} - ${date}`,
-      },
-      {
-        headers: { "Content-Type": "application/json" },
-      }
-    );
-
-    console.log("✅ Pesan berhasil dikirim:", response.data);
-    res.status(200).json({ message: "Reminder sent!", data: response.data });
-  } catch (error) {
-    console.error(
-      "❌ Gagal mengirim pesan WhatsApp:",
-      error.response?.data || error.message
-    );
-    res.status(500).json({
-      message: "Failed to send reminder",
-      error: error.response?.data || error.message,
-    });
-  }
-  /* } else {
-    res.status(200).json({ message: "Reminder scheduled but not sent today." });
-  } */
-});
 
 module.exports = router;
